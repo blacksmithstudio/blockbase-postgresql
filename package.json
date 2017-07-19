@@ -1,5 +1,5 @@
 {
-  "name": "@blacksmithstudio/driver-postgresql",
+  "name": "@blacksmithstudio/blockbase-postgresql",
   "version": "0.0.1",
   "description": "blockbase driver for Postgresql",
   "main": "driver.js",
