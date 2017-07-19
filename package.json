@@ -1,18 +1,14 @@
 {
   "name": "@blacksmithstudio/driver-postgresql",
   "version": "0.0.1",
-  "description": "blockbase MVC node framework project",
-  "main": "src/start.js",
+  "description": "blockbase driver for Postgresql",
+  "main": "driver.js",
   "scripts": {
-    "dev": "export NODE_ENV=development NODE_CONFIG_DIR=./config && node --max_old_space_size=4096 --harmony-async-await ./src/app.js",
-    "start": "export NODE_ENV=development && pm2 start app.js --node-args='--harmony-async-await' --name=blockbase",
-    "serve:production": "export NODE_ENV=production && pm2 start app.js --node-args='--harmony-async-await' --name=blockbase",
-    "serve:sandbox": "export NODE_ENV=sandbox && pm2 start app.js --node-args='--harmony-async-await' --name=blockbase",
     "test": "mocha --harmony-async-await"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org:blacksmithstudio/blockbase-sample.git"
+    "url": "git+ssh://git@bitbucket.org:blacksmithstudio/driver-postgresql.git"
   },
   "author": "Alexandre Pereira <alex@blacksmith.studio>",
   "license": "MIT",
