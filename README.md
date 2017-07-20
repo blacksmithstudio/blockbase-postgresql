@@ -1,8 +1,26 @@
 # Driver Postgresql for Blockbase
-Compatible with Blockbase Framwork
+Compatible with Blockbase Framework
 
 ### Version
-0.1 alpha
+0.9.1 alpha
+
+### How to install ?
+```shell
+$ npm i --save @blacksmithstudio/blockbase-postgresql
+```
+
+Then add to your config/{env}.yml the following instructions depending of your system
+```yml
+dbms : postgresql
+postgresql :
+    host : localhost
+    user : johndoe
+    password :
+    port : 5432
+    database : yourdatabase
+```
+
+@TODO - finish the doc on the model use
 
 License
 ----
