@@ -177,6 +177,46 @@ module.exports = (app) => {
                 this.update(item, cb)
             else
                 this.create(item, cb)
+        },
+
+        /**
+         * Append a value to a pSQL Array
+         * @param {string} item - user item
+         * @param {number} target - target id
+         * @param {string} column - target column (array)
+         * @param {*} value - value to insert
+         * @param {function} cb - callback
+         */
+        array_append(item, target, column, value, cb){
+            let q = `UPDATE ${item.params.type}s SET ${column}=array_append(${column}, $1) where id=$2 and $1 <> all (${column}) RETURNING *`
+
+            query(q, [ value, target ], (err, rows) => {
+                if(err || !rows.length) return cb(err, null)
+
+                delete rows[0].id
+                item.body(rows[0])
+                cb(null, item)
+            })
+        },
+
+        /**
+         * Remove a value from a pSQL Array
+         * @param {string} item - user item
+         * @param {number} target - target id
+         * @param {string} column - target column (array)
+         * @param {*} value - value to insert
+         * @param {function} cb - callback
+         */
+        array_remove(item, target, column, value, cb){
+            let q = `UPDATE ${item.params.type}s SET ${column}=array_remove(${column}, $1) where id=$2 RETURNING *`
+
+            query(q, [ value, target ], (err, rows) => {
+                if(err || !rows.length) return cb(err, null)
+
+                delete rows[0].id
+                item.body(rows[0])
+                cb(null, item)
+            })
         }
     }
 }
