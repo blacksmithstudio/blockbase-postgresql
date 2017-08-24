@@ -90,7 +90,9 @@ module.exports = (app) => {
             query(q, prepare(values), (err, rows) => {
                 if(err || !rows.length) return cb(err, null)
 
-                item.data._id = rows[0].id
+                item.data = rows[0]
+                item.data._id = item.data.id
+                delete item.data.id
                 cb(null, item)
             })
         },
