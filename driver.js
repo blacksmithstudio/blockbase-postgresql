@@ -91,27 +91,24 @@ module.exports = (app) => {
                 if(err || !rows.length) return cb(err, null)
 
                 item.data = rows[0]
-                item.data._id = item.data.id
-                delete item.data.id
                 cb(null, item)
             })
         },
 
         /**
          * Read an object from the DB
-         * @param {Object} item - object compiled by the model (needs _id)
+         * @param {Object} item - object compiled by the model (needs id)
          * @param {function} cb - callback
          */
         read(item, cb){
-            if(!item.data || !item.data._id)
-                return cb(`Cannot read an item without an '_id'`, null)
+            if(!item.data || !item.data.id)
+                return cb(`Cannot read an item without an 'id'`, null)
 
             let q = `SELECT * FROM ${item.params.type}s WHERE id=$1`
 
-            query(q, [ item.data._id ], (err, rows) => {
+            query(q, [ item.data.id ], (err, rows) => {
                 if(err || !rows.length) return cb(err, null)
 
-                delete rows[0].id
                 item.body(rows[0])
                 cb(null, item)
             })
@@ -123,8 +120,8 @@ module.exports = (app) => {
          * @param {function} cb - callback
          */
         update(item, cb){
-            if(!item.data || !item.data._id)
-                return cb(`Cannot update an item without an '_id'`, null)
+            if(!item.data || !item.data.id)
+                return cb(`Cannot update an item without an 'id'`, null)
 
             let updates = [],
                 count = 1
@@ -136,12 +133,11 @@ module.exports = (app) => {
 
             let q = `UPDATE ${item.params.type}s SET ${updates.join(',')} WHERE id=$${count} RETURNING *`
 
-            let values = _.values(item.body()).concat([ item.data._id ])
+            let values = _.values(item.body()).concat([ item.data.id ])
 
             query(q, prepare(values), (err, rows) => {
                 if(err || !rows.length) return cb(err, null)
 
-                delete rows[0].id
                 item.body(rows[0])
                 cb(null, item)
             })
@@ -153,12 +149,12 @@ module.exports = (app) => {
          * @param {function} cb - callback
          */
         delete(item, cb){
-            if(!item.data || !item.data._id)
-                return cb(`Cannot delete an item without an '_id'`, null)
+            if(!item.data || !item.data.id)
+                return cb(`Cannot delete an item without an 'id'`, null)
 
             let q = `DELETE FROM ${item.params.type}s WHERE id=$1`
 
-            query(q, [ item.data._id ], (err, rows) => {
+            query(q, [ item.data.id ], (err, rows) => {
                 if(err)
                     return cb ? cb(err, false) : app.drivers.logger.error('Postgresql', err)
 
@@ -175,7 +171,7 @@ module.exports = (app) => {
         save(item, cb){
             if(!item.valid()) return cb(item.validate().error, null)
 
-            if(item.data._id)
+            if(item.data.id)
                 this.update(item, cb)
             else
                 this.create(item, cb)
@@ -195,7 +191,6 @@ module.exports = (app) => {
             query(q, [ value, target ], (err, rows) => {
                 if(err || !rows.length) return cb(err, null)
 
-                delete rows[0].id
                 item.body(rows[0])
                 cb(null, item)
             })
@@ -215,7 +210,6 @@ module.exports = (app) => {
             query(q, [ value, target ], (err, rows) => {
                 if(err || !rows.length) return cb(err, null)
 
-                delete rows[0].id
                 item.body(rows[0])
                 cb(null, item)
             })
