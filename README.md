@@ -2,7 +2,7 @@
 Compatible with Blockbase Framework
 
 ### Version
-0.9.4 alpha
+0.9.5 alpha
 
 ### How to install ?
 ```shell

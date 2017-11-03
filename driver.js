@@ -170,11 +170,7 @@ module.exports = (app) => {
          */
         save(item, cb){
             if(!item.valid()) return cb(item.validate().error, null)
-
-            if(item.data.id)
-                this.update(item, cb)
-            else
-                this.create(item, cb)
+            this.create(item, cb)
         },
 
         /**
