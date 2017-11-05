@@ -10,8 +10,10 @@ const pg = require('pg')
  * @returns {Object} driver object containing public methods
  */
 module.exports = (app) => {
+    const Logger = app.drivers.logger
+
     if(!app.config.has('postgresql'))
-        return app.drivers.logger.error('Drivers', 'Can not init postgresql, no valid config')
+        return Logger.error('Drivers', 'Can not init postgresql, no valid config')
 
     const config = app.config.get('postgresql')
     const pool = new pg.Pool({
@@ -32,15 +34,20 @@ module.exports = (app) => {
      * @param {Object[]} data - array of data to pass in the prepared query
      * @param {function} cb - callback
      */
-    function query(sql, data, cb){
-        pool.connect((err, client, done) => {
-            if (err) return app.drivers.logger.error('Drivers - postgresql', err)
+    async function query(sql, data){
+        return new Promise((resolve, reject) => {
+            pool.connect((error, client, done) => {
+                if (error) {
+                    Logger.error('Drivers - postgresql', error)
+                    return reject(error)
+                }
 
-            client.query(sql, data, (err, result) => {
-                done(err)
-                if (err) return cb(err, null)
+                client.query(sql, data, (error, result) => {
+                    done(error)
+                    if (error) return reject(error)
 
-                cb(null, result.rows)
+                    resolve(result.rows)
+                })
             })
         })
     }
@@ -79,49 +86,49 @@ module.exports = (app) => {
         /**
          * Create an object based on a Blocbase valid model
          * @param {Object} item - object compiled by the model
-         * @param {function} cb - callback
+         * @return {Object} saved item
          */
-        create(item, cb){
-            let columns = _.keys(item.body())
-            let values = _.values(item.body())
-            let pseudos = _.map(_.range(1, Object.keys(columns).length+1), (value, key) => { return `$${value}` })
-            let q = `INSERT INTO ${item.params.type}s (${columns}) VALUES (${pseudos.join(',')}) RETURNING *`
+        async save(item){
+            if(!item.valid()) throw Error(item.validate().error)
 
-            query(q, prepare(values), (err, rows) => {
-                if(err || !rows.length) return cb(err, null)
+            try{
+                let columns = _.keys(item.body()),
+                    values = _.values(item.body())
 
+                let pseudos = _.map(_.range(1, Object.keys(columns).length+1), (value, key) => { return `$${value}` })
+                let q = `INSERT INTO ${item.params.type}s (${columns}) VALUES (${pseudos.join(',')}) RETURNING *`
+                let rows = await query(q, prepare(values))
                 item.data = rows[0]
-                cb(null, item)
-            })
+                return item
+            } catch(e) { throw e }
         },
 
         /**
          * Read an object from the DB
          * @param {Object} item - object compiled by the model (needs id)
-         * @param {function} cb - callback
+         * @return {Object} called item
          */
-        read(item, cb){
+        async read(item){
             if(!item.data || !item.data.id)
-                return cb(`Cannot read an item without an 'id'`, null)
+                throw Error(`Cannot read an item without an 'id'`)
 
             let q = `SELECT * FROM ${item.params.type}s WHERE id=$1`
 
-            query(q, [ item.data.id ], (err, rows) => {
-                if(err || !rows.length) return cb(err, null)
-
+            try{
+                let rows = await query(q, [ item.data.id ])
                 item.body(rows[0])
-                cb(null, item)
-            })
+                return item
+            } catch(e) { throw e }
         },
 
         /**
          * Update a valid object model
          * @param {Object} item - object compiled by the model
-         * @param {function} cb - callback
+         * @return {Object} updated item
          */
-        update(item, cb){
+        async update(item){
             if(!item.data || !item.data.id)
-                return cb(`Cannot update an item without an 'id'`, null)
+                throw Error(`Cannot update an item without an 'id'`)
 
             let updates = [],
                 count = 1
@@ -135,42 +142,28 @@ module.exports = (app) => {
 
             let values = _.values(item.body()).concat([ item.data.id ])
 
-            query(q, prepare(values), (err, rows) => {
-                if(err || !rows.length) return cb(err, null)
-
+            try{
+                let rows = await query(q, prepare(values))
                 item.body(rows[0])
-                cb(null, item)
-            })
+                return item
+            } catch(e) { throw e }
         },
 
         /**
          * Delete a valid object model
          * @param {Object} item - object compiled by the model
-         * @param {function} cb - callback
+         * @returns {boolean} - true if deleted
          */
-        delete(item, cb){
+        async delete(item){
             if(!item.data || !item.data.id)
-                return cb(`Cannot delete an item without an 'id'`, null)
+                throw Error(`Cannot delete an item without an 'id'`)
 
             let q = `DELETE FROM ${item.params.type}s WHERE id=$1`
 
-            query(q, [ item.data.id ], (err, rows) => {
-                if(err)
-                    return cb ? cb(err, false) : app.drivers.logger.error('Postgresql', err)
-
-                if(cb)
-                    cb(null, true)
-            })
-        },
-
-        /**
-         * Save the object and execute the creation or update
-         * @param {Object} item - object compiled by the model
-         * @param {function} cb - callback
-         */
-        save(item, cb){
-            if(!item.valid()) return cb(item.validate().error, null)
-            this.create(item, cb)
+            try{
+                let done = await query(q, [ item.data.id ])
+                return true
+            } catch(e) { throw e }
         },
 
         /**
@@ -179,17 +172,16 @@ module.exports = (app) => {
          * @param {number} target - target id
          * @param {string} column - target column (array)
          * @param {*} value - value to insert
-         * @param {function} cb - callback
+         * @returns {Object} - updated item
          */
-        array_append(item, target, column, value, cb){
+        async array_append(item, target, column, value){
             let q = `UPDATE ${item.params.type}s SET ${column}=array_append(${column}, $1) where id=$2 and $1 <> all (${column}) RETURNING *`
 
-            query(q, [ value, target ], (err, rows) => {
-                if(err || !rows.length) return cb(err, null)
-
+            try{
+                let rows = await query(q, [ value, target ])
                 item.body(rows[0])
-                cb(null, item)
-            })
+                return item
+            } catch(e) { throw e }
         },
 
         /**
@@ -198,17 +190,16 @@ module.exports = (app) => {
          * @param {number} target - target id
          * @param {string} column - target column (array)
          * @param {*} value - value to insert
-         * @param {function} cb - callback
+         * @returns {Object} - updated item
          */
-        array_remove(item, target, column, value, cb){
+        async array_remove(item, target, column, value){
             let q = `UPDATE ${item.params.type}s SET ${column}=array_remove(${column}, $1) where id=$2 RETURNING *`
 
-            query(q, [ value, target ], (err, rows) => {
-                if(err || !rows.length) return cb(err, null)
-
+            try{
+                let rows = await query(q, [ value, target ])
                 item.body(rows[0])
-                cb(null, item)
-            })
+                return item
+            } catch(e) { throw e }
         }
     }
 }
