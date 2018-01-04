@@ -115,9 +115,12 @@ module.exports = (app) => {
             let q = `SELECT * FROM ${item.params.type}s WHERE id=$1`
 
             try{
-                let rows = await query(q, [ item.data.id ])
-                item.body(rows[0])
-                return item
+
+                let rows = await query(q, [item.data.id])
+                if (rows.length)
+                    item.body(rows[0])
+                return rows.length ? item : null
+
             } catch(e) { throw e }
         },
 
