@@ -1,6 +1,6 @@
 {
   "name": "@blacksmithstudio/blockbase-postgresql",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "blockbase driver for Postgresql",
   "main": "driver.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org:blacksmithstudio/driver-postgresql.git"
+    "url": "git+ssh://git@github.com:blacksmithstudio/blockbase-postgresql.git"
   },
   "author": "Alexandre Pereira <alex@blacksmith.studio>",
   "license": "MIT",
