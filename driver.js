@@ -96,7 +96,7 @@ module.exports = (app) => {
                     values = _.values(item.body())
 
                 let pseudos = _.map(_.range(1, Object.keys(columns).length+1), (value, key) => { return `$${value}` })
-                let q = `INSERT INTO ${item.params.type}s (${columns}) VALUES (${pseudos.join(',')}) RETURNING *`
+                let q = `INSERT INTO ${item.params.table || (item.params.type + 's')} (${columns}) VALUES (${pseudos.join(',')}) RETURNING *`
                 let rows = await query(q, prepare(values))
                 item.data = rows[0]
                 return item
@@ -112,7 +112,7 @@ module.exports = (app) => {
             if(!item.data || !item.data.id)
                 throw Error(`Cannot read an item without an 'id'`)
 
-            let q = `SELECT * FROM ${item.params.type}s WHERE id=$1`
+            let q = `SELECT * FROM ${item.params.table || (item.params.type + 's')} WHERE id=$1`
 
             try{
 
@@ -141,7 +141,7 @@ module.exports = (app) => {
                 count++
             }
 
-            let q = `UPDATE ${item.params.type}s SET ${updates.join(',')} WHERE id=$${count} RETURNING *`
+            let q = `UPDATE ${item.params.table || (item.params.type + 's')} SET ${updates.join(',')} WHERE id=$${count} RETURNING *`
 
             let values = _.values(item.body()).concat([ item.data.id ])
 
@@ -161,7 +161,7 @@ module.exports = (app) => {
             if(!item.data || !item.data.id)
                 throw Error(`Cannot delete an item without an 'id'`)
 
-            let q = `DELETE FROM ${item.params.type}s WHERE id=$1`
+            let q = `DELETE FROM ${item.params.table || (item.params.type + 's')} WHERE id=$1`
 
             try{
                 let done = await query(q, [ item.data.id ])
@@ -178,7 +178,7 @@ module.exports = (app) => {
          * @returns {Object} - updated item
          */
         async array_append(item, target, column, value){
-            let q = `UPDATE ${item.params.type}s SET ${column}=array_append(${column}, $1) where id=$2 and $1 <> all (${column}) RETURNING *`
+            let q = `UPDATE ${item.params.table || (item.params.type + 's')} SET ${column}=array_append(${column}, $1) where id=$2 and $1 <> all (${column}) RETURNING *`
 
             try{
                 let rows = await query(q, [ value, target ])
@@ -196,7 +196,7 @@ module.exports = (app) => {
          * @returns {Object} - updated item
          */
         async array_remove(item, target, column, value){
-            let q = `UPDATE ${item.params.type}s SET ${column}=array_remove(${column}, $1) where id=$2 RETURNING *`
+            let q = `UPDATE ${item.params.table || (item.params.type + 's')} SET ${column}=array_remove(${column}, $1) where id=$2 RETURNING *`
 
             try{
                 let rows = await query(q, [ value, target ])
