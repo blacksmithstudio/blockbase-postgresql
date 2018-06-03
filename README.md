@@ -24,8 +24,8 @@ postgresql :
 
 License
 ----
-
-(Copyright) 2017 - Alexandre Pereira for Blacksmith S.A.S.
+(Licence [MIT](https://github.com/blacksmithstudio/blockbase-postgresql/blob/master/LICENCE))
+Coded by [Blacksmith](https://www.blacksmith.studio)
 
 
 **Free Software, Hell Yeah!**
