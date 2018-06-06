@@ -1,10 +1,10 @@
 {
-  "name": "@blacksmithstudio/blockbase-postgresql",
+  "name": "blockbase-postgresql",
   "version": "1.0.2",
   "description": "blockbase driver for Postgresql",
   "main": "driver.js",
   "scripts": {
-    "test": "mocha --harmony-async-await"
+    "test": "mocha --exit"
   },
   "repository": {
     "type": "git",

@@ -16,15 +16,10 @@ module.exports = (app) => {
         return Logger.error('Drivers', 'Can not init postgresql, no valid config')
 
     const config = app.config.get('postgresql')
-    const pool = new pg.Pool({
-        user: config.user,
-        database: config.database,
-        password: config.password,
-        host: config.host,
-        port: config.port,
-        max: 1000,
-        idleTimeoutMillis: 30000
-    })
+    config.max = config.max || 1000
+    config.idleTimeoutMillis = config.idleTimeoutMillis || 30000
+
+    const pool = new pg.Pool(config)
 
     /**
      * Query function, executing the SQL query
