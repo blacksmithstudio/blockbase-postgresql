@@ -57,7 +57,7 @@ module.exports = (app) => {
     function prepare(values) {
         return values.map(val => {
             if (typeof val == 'object') {
-                if (Array.isArray(val) && val.reduce((s, v) => s && parseInt(v) >= 0, true))
+                if (Array.isArray(val))
                     return JSON.stringify(val).replace('[', '{').replace(']', '}')
                 else
                     return JSON.stringify(val)
