@@ -4,7 +4,7 @@ Compatible with Blockbase Framework
 [![Travis Blockbase](https://api.travis-ci.org/blacksmithstudio/blockbase-postgresql.svg?branch=master)](https://travis-ci.org/blacksmithstudio/blockbase-postgresql)
 
 ### Version
-1.0.2
+1.0.4
 
 ### How to install ?
 ```shell
