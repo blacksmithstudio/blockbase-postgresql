@@ -4,7 +4,7 @@ Compatible with Blockbase Framework
 [![Travis Blockbase](https://api.travis-ci.org/blacksmithstudio/blockbase-postgresql.svg?branch=master)](https://travis-ci.org/blacksmithstudio/blockbase-postgresql)
 
 ### Version
-1.0.4
+v1.0.8
 
 ### How to install ?
 ```shell
@@ -132,8 +132,9 @@ $ npm test
 
 License
 ----
-(Licence [MIT](https://github.com/blacksmithstudio/blockbase/blob/master/LICENCE))
+(Licence [MIT](https://github.com/blacksmithstudio/blockbase-express/blob/master/LICENCE))
 Coded by [Blacksmith](https://www.blacksmith.studio)
+
 
 **Free Software, Hell Yeah!**
 

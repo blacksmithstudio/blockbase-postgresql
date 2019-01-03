@@ -1,0 +1,10 @@
+log: true
+name: driver-postgresql-test
+
+dbms: postgresql
+postgresql:
+    host: 127.0.0.1
+    password: TRAVIS
+    user: travis
+    port: 5432
+    database: test
