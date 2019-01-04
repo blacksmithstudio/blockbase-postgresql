@@ -29,22 +29,17 @@ module.exports = (app) => {
      * @param {Object[]} data - array of data to pass in the prepared query
      * @param {function} cb - callback
      */
-    async function query(sql, data) {
-        return new Promise((resolve, reject) => {
-            pool.connect((error, client, done) => {
-                if (error) {
-                    Logger.error('Drivers - postgresql', error)
-                    return reject(error)
-                }
-
-                client.query(sql, data, (error, result) => {
-                    done(error)
-                    if (error) return reject(error)
-
-                    resolve(result.rows)
-                })
-            })
-        })
+    async function query(sql, data){
+        const client = await pool.connect()
+        try {
+            const result = await client.query(sql, data)
+            return result.rows
+        } catch(error) {
+            Logger.error('Drivers - postgresql', error)
+            return error
+        } finally {
+            client.release()
+        }
     }
 
     /**

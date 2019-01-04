@@ -1,6 +1,6 @@
 {
   "name": "blockbase-postgresql",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "blockbase driver for Postgresql",
   "main": "driver.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "author": "Alexandre Pereira <alex@blacksmith.studio>",
   "license": "MIT",
   "dependencies": {
-    "pg": "^7.0.1",
+    "pg": "^7.7.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
