@@ -126,17 +126,11 @@ module.exports = (app) => {
             if (!item.data || !item.data.id)
                 throw Error(`Cannot update an item without an 'id'`)
 
-            let updates = [],
-                count   = 1
+            let columns = Object.keys(_.omit(item.body(), 'id')).map(c => `"${c}"`),
+                values  = Object.values(_.omit(item.body(), 'id'))
 
-            for (let [k, v] of Object.entries(item.body())) {
-                updates.push(`"${k}"=$${count}`)
-                count++
-            }
-
-            let q = `UPDATE ${item.params.table || (item.params.type + 's')} SET ${updates.join(',')} WHERE id=$${count} RETURNING *`
-
-            let values = _.values(item.body()).concat([item.data.id])
+            let q = `UPDATE ${item.params.table || (item.params.type + 's')} SET ${columns.map((c, idx) => `${c}=$${idx+1}`).join(',')} WHERE id=$${columns.length+1} RETURNING *`
+            values = values.concat([item.data.id])
 
             try {
                 let rows = await query(q, prepare(values))
