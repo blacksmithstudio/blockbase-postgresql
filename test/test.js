@@ -38,7 +38,7 @@ describe('Postgresql driver tests', async function () {
         let id
         let firstname   = 'toto',
             lastname    = 'robert',
-            favorites   = {a: [1, 34, {'a': 2}]},
+            favorites   = {a: ["a", 34, {'a': 2}]},
             preferences = [1, 2, 3],
             order       = 1
         it('should save a user', async function () {
@@ -94,7 +94,7 @@ describe('Postgresql driver tests', async function () {
 
         it('should update a user', async function () {
 
-            let firstname = 'toto2', lastname = 'robert2', favorites = [1, 2, {'a': 2}]
+            let firstname = 'toto2', lastname = 'robert2', favorites = ["aze", "qsd"]
             const User = application.models.user
 
             const UserModel = new User({id, firstname, lastname, favorites})

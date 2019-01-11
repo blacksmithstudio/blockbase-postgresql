@@ -36,7 +36,7 @@ module.exports = (app) => {
             return result.rows
         } catch(error) {
             Logger.error('Drivers - postgresql', error)
-            return error
+            throw error
         } finally {
             client.release()
         }
