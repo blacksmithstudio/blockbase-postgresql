@@ -13,8 +13,7 @@
   "author": "Alexandre Pereira <alex@blacksmith.studio>",
   "license": "MIT",
   "dependencies": {
-    "pg": "^7.7.0",
-    "underscore": "^1.8.3"
+    "pg": "^7.7.0"
   },
   "devDependencies": {
     "blockbase": "^1.0.6",

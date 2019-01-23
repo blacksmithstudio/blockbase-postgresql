@@ -15,7 +15,7 @@ const blockbase = require('blockbase')
 let driver
 let application
 
-blockbase({root: __dirname}, async app => {
+blockbase({ root: __dirname }, async app => {
     driver = app.drivers.postgresql = require('../driver')(app)
     application = app
 })
@@ -38,13 +38,14 @@ describe('Postgresql driver tests', async function () {
         let id
         let firstname   = 'toto',
             lastname    = 'robert',
-            favorites   = {a: [1, 34, {'a': 2}]},
+            favorites   = { a: [1, 34, { 'a': 2 }] },
             preferences = [1, 2, 3],
             order       = 1
+        let _tests = 100
         it('should save a user', async function () {
 
             const User = application.models.user
-            const UserModel = new User({firstname, lastname, favorites, order, preferences})
+            const UserModel = new User({ firstname, lastname, favorites, order, preferences })
             try {
                 let user = await UserModel.save()
                 should.exist(user)
@@ -59,18 +60,21 @@ describe('Postgresql driver tests', async function () {
                 should.exist(user.data.preferences)
                 should.equal(JSON.stringify(user.data.preferences), JSON.stringify(preferences))
                 id = user.data.id
-            }
-            catch (e) {
+            } catch (e) {
                 console.log('e', e)
 
                 should.not.exist(e)
             }
         })
 
-        it('should read a user', async function () {
+        it('should read many user', async function () {
+            this.timeout(10000)
 
             const User = application.models.user
-            const UserModel = new User({id})
+            const UserModel = new User({ id })
+            for (let i = 0; i < _tests; i++) {
+                let existing = await UserModel.read()
+            }
 
             try {
                 let existing = await UserModel.read()
@@ -85,8 +89,31 @@ describe('Postgresql driver tests', async function () {
                 should.equal(existing.data.order, order)
                 should.exist(existing.data.preferences)
                 should.equal(JSON.stringify(existing.data.preferences), JSON.stringify(preferences))
+            } catch (e) {
+                should.not.exist(e)
             }
-            catch (e) {
+        })
+
+
+        it('should read a user', async function () {
+
+            const User = application.models.user
+            const UserModel = new User({ id })
+
+            try {
+                let existing = await UserModel.read()
+                should.exist(existing)
+                should.exist(existing.data)
+                should.exist(existing.data.id)
+                should.exist(existing.data.firstname)
+                should.equal(existing.data.firstname, firstname)
+                should.exist(existing.data.favorites)
+                should.equal(JSON.stringify(existing.data.favorites), JSON.stringify(favorites))
+                should.exist(existing.data.order)
+                should.equal(existing.data.order, order)
+                should.exist(existing.data.preferences)
+                should.equal(JSON.stringify(existing.data.preferences), JSON.stringify(preferences))
+            } catch (e) {
                 should.not.exist(e)
             }
         })
@@ -94,10 +121,10 @@ describe('Postgresql driver tests', async function () {
 
         it('should update a user', async function () {
 
-            let firstname = 'toto2', lastname = 'robert2', favorites = [1, 2, {'a': 2}]
+            let firstname = 'toto2', lastname = 'robert2', favorites = { a: 1, b: 2, c: { a: 2 } }
             const User = application.models.user
 
-            const UserModel = new User({id, firstname, lastname, favorites})
+            const UserModel = new User({ id, firstname, lastname, favorites })
 
             try {
                 let existing = await UserModel.update()
@@ -115,8 +142,7 @@ describe('Postgresql driver tests', async function () {
                 should.equal(existing.data.order, order)
                 should.exist(existing.data.preferences)
                 should.equal(JSON.stringify(existing.data.preferences), JSON.stringify(preferences))
-            }
-            catch (e) {
+            } catch (e) {
                 should.not.exist(e)
             }
         })
@@ -127,14 +153,13 @@ describe('Postgresql driver tests', async function () {
             let firstname = 'toto2', lastname = 'robert2'
             const User = application.models.user
 
-            const UserModel = new User({id, firstname, lastname})
+            const UserModel = new User({ id, firstname, lastname })
 
             try {
                 let done = await UserModel.delete()
                 should.exist(done)
                 should.equal(done, true)
-            }
-            catch (e) {
+            } catch (e) {
                 should.not.exist(e)
             }
         })

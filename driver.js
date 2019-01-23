@@ -1,4 +1,3 @@
-const _ = require('underscore')
 const pg = require('pg')
 
 /**
@@ -29,12 +28,12 @@ module.exports = (app) => {
      * @param {Object[]} data - array of data to pass in the prepared query
      * @param {function} cb - callback
      */
-    async function query(sql, data){
+    async function query(sql, data) {
         const client = await pool.connect()
         try {
             const result = await client.query(sql, data)
             return result.rows
-        } catch(error) {
+        } catch (error) {
             Logger.error('Drivers - postgresql', error)
             return error
         } finally {
@@ -56,8 +55,7 @@ module.exports = (app) => {
                     return JSON.stringify(val).replace('[', '{').replace(']', '}')
                 else
                     return JSON.stringify(val)
-            }
-            else
+            } else
                 return val
         })
     }
@@ -81,9 +79,8 @@ module.exports = (app) => {
                 let columns = Object.keys(item.body()).map(c => `"${c}"`),
                     values  = Object.values(item.body())
 
-                let pseudos = _.map(_.range(1, Object.keys(columns).length + 1), (value, key) => {
-                    return `$${value}`
-                })
+                let pseudos = columns.map((c, i) => `$${i + 1}`)
+
                 let q = `INSERT INTO ${item.params.table || (item.params.type + 's')} (${columns}) VALUES (${pseudos.join(',')}) RETURNING *`
 
                 let rows = await query(q, prepare(values))
@@ -126,10 +123,12 @@ module.exports = (app) => {
             if (!item.data || !item.data.id)
                 throw Error(`Cannot update an item without an 'id'`)
 
-            let columns = Object.keys(_.omit(item.body(), 'id')).map(c => `"${c}"`),
-                values  = Object.values(_.omit(item.body(), 'id'))
+            let columns = Object.keys(item.body()).filter(c => c != 'id').map(c => `"${c}"`),
+                values  = Object.values({ ...item.body(), id: undefined }).filter(v => v != undefined)
 
-            let q = `UPDATE ${item.params.table || (item.params.type + 's')} SET ${columns.map((c, idx) => `${c}=$${idx+1}`).join(',')} WHERE id=$${columns.length+1} RETURNING *`
+            let q = `UPDATE ${item.params.table || (item.params.type + 's')} 
+                    SET ${columns.map((c, idx) => `${c}=$${idx + 1}`).join(',')} 
+                    WHERE id=$${columns.length + 1} RETURNING *`
             values = values.concat([item.data.id])
 
             try {
