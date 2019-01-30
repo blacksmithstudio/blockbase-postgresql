@@ -1,4 +1,4 @@
-const pg = require('pg')
+const { Pool } = require('pg')
 
 /**
  * Blockbase Postgresql driver (app.drivers.postgresql)
@@ -18,7 +18,7 @@ module.exports = (app) => {
     config.max = config.max || 1000
     config.idleTimeoutMillis = config.idleTimeoutMillis || 30000
 
-    const pool = new pg.Pool(config)
+    const pool = new Pool(config)
 
     /**
      * Query function, executing the SQL query
@@ -26,7 +26,6 @@ module.exports = (app) => {
      * @name query
      * @param {string} sql - sql query (prepared or not)
      * @param {Object[]} data - array of data to pass in the prepared query
-     * @param {function} cb - callback
      */
     async function query(sql, data) {
         const client = await pool.connect()
@@ -35,9 +34,9 @@ module.exports = (app) => {
             return result.rows
         } catch (error) {
             Logger.error('Drivers - postgresql', error)
-            return error
+            throw error
         } finally {
-            client.end()
+            client.release()
         }
     }
 

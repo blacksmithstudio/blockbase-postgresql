@@ -94,34 +94,36 @@ describe('Postgresql driver tests', async function () {
             }
         })
 
+        for (let i = 0; i < 1000; i++) {
 
-        it('should read a user', async function () {
+            it(`should read a user [${i}]`, async function () {
 
-            const User = application.models.user
-            const UserModel = new User({ id })
+                const User = application.models.user
+                const UserModel = new User({ id })
 
-            try {
-                let existing = await UserModel.read()
-                should.exist(existing)
-                should.exist(existing.data)
-                should.exist(existing.data.id)
-                should.exist(existing.data.firstname)
-                should.equal(existing.data.firstname, firstname)
-                should.exist(existing.data.favorites)
-                should.equal(JSON.stringify(existing.data.favorites), JSON.stringify(favorites))
-                should.exist(existing.data.order)
-                should.equal(existing.data.order, order)
-                should.exist(existing.data.preferences)
-                should.equal(JSON.stringify(existing.data.preferences), JSON.stringify(preferences))
-            } catch (e) {
-                should.not.exist(e)
-            }
-        })
+                try {
+                    let existing = await UserModel.read()
+                    should.exist(existing)
+                    should.exist(existing.data)
+                    should.exist(existing.data.id)
+                    should.exist(existing.data.firstname)
+                    should.equal(existing.data.firstname, firstname)
+                    should.exist(existing.data.favorites)
+                    should.equal(JSON.stringify(existing.data.favorites), JSON.stringify(favorites))
+                    should.exist(existing.data.order)
+                    should.equal(existing.data.order, order)
+                    should.exist(existing.data.preferences)
+                    should.equal(JSON.stringify(existing.data.preferences), JSON.stringify(preferences))
+                } catch (e) {
+                    should.not.exist(e)
+                }
+            })
+        }
 
 
         it('should update a user', async function () {
 
-            let firstname = 'toto2', lastname = 'robert2', favorites = { a: 1, b: 2, c: { a: 2 } }
+            let firstname = 'toto2', lastname = 'robert2', favorites = [{ a: 1, b: 2, c: { a: 2 } }]
             const User = application.models.user
 
             const UserModel = new User({ id, firstname, lastname, favorites })
