@@ -50,7 +50,7 @@ module.exports = (app) => {
     function prepare(values) {
         return values.map(val => {
             if (typeof val == 'object') {
-                if (Array.isArray(val))
+                if (Array.isArray(val) && !val.find(v => typeof v == 'object'))
                     return JSON.stringify(val).replace('[', '{').replace(']', '}')
                 else
                     return JSON.stringify(val)

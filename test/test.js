@@ -123,7 +123,7 @@ describe('Postgresql driver tests', async function () {
 
         it('should update a user', async function () {
 
-            let firstname = 'toto2', lastname = 'robert2', favorites = [{ a: 1, b: 2, c: { a: 2 } }]
+            let firstname = 'toto2', lastname = 'robert2', favorites = [{ a: 1, b: 2, c: { a: 2 } }, { d: '4', e: 4 }]
             const User = application.models.user
 
             const UserModel = new User({ id, firstname, lastname, favorites })
@@ -150,7 +150,7 @@ describe('Postgresql driver tests', async function () {
         })
 
 
-        it('should delete a user', async function () {
+        it.skip('should delete a user', async function () {
 
             let firstname = 'toto2', lastname = 'robert2'
             const User = application.models.user
