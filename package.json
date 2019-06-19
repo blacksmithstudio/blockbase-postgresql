@@ -1,6 +1,6 @@
 {
   "name": "blockbase-postgresql",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "blockbase driver for Postgresql",
   "main": "driver.js",
   "scripts": {
