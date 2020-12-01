@@ -10,14 +10,15 @@
     "type": "git",
     "url": "git+ssh://git@github.com:blacksmithstudio/blockbase-postgresql.git"
   },
-  "author": "Alexandre Pereira <alex@blacksmith.studio>",
+  "author": "Blacksmith <code@blacksmith.studio>",
   "license": "MIT",
   "dependencies": {
     "js-yaml": "^3.13.1",
-    "pg": "^7.7.0"
+    "knex": "^0.21.12",
+    "pg": "^8.5.1"
   },
   "devDependencies": {
-    "blockbase": "^1.0.6",
+    "blockbase": "^1.0.22",
     "joi": "^13.3.0",
     "mocha": "^5.2.0",
     "should": "^13.2.1"

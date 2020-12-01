@@ -3,7 +3,7 @@ const { Pool } = require('pg')
 /**
  * Blockbase Postgresql driver (app.drivers.postgresql)
  * @memberof app.drivers
- * @author Alexandre Pereira <alex@blacksmith.studio>
+ * @author Blacksmith <code@blacksmith.studio>
  * @param {Object} app - Application namespace
  *
  * @returns {Object} driver object containing public methods
